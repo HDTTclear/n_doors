@@ -1,0 +1,101 @@
+import random
+import logging
+'''
+声明：
+本人非本代码作者
+原作者博客
+http://www.cnblogs.com/twocats/p/3440398.html
+'''
+class MontyHall:
+    def __init__(self, num=3):
+        '''
+        创建一个door列表
+        0表示门关闭的状态
+        1表示该门后有车
+        -1表示该门被主持人打开
+        '''
+        self.doors = [0] * num
+        self.doors[0] = 1
+        self.choice = -1
+        self.shuffle()
+
+    def shuffle(self):
+        '''
+        开始新的游戏
+        关闭所有打开的门（-1）
+        重新安排轿车的位置
+        '''
+        for i in range(len(self.doors)):
+            if self.doors[i] == -1:
+                self.doors[i] = 0
+        random.shuffle(self.doors)
+        print(self.doors)
+    def makeChoice(self):
+        '''
+        player随机选择一扇门
+        '''
+        self.choice = random.randint(0, len(self.doors)-1)
+        #logging.info('choice: %d' % self.choice)
+        #logging.info('original: %s' % self.doors)
+        #print('choice: %d' % self.choice)
+        #print('original: %s' % self.doors)
+        return (self.choice,self.doors)
+    def excludeChoice(self):
+        '''
+        主持人排除选择
+        直到只剩两扇门
+        '''
+        toBeExcluded = []
+        for i in range(len(self.doors)):
+            if self.doors[i] == 0 and i != self.choice:
+                toBeExcluded.append(i)
+
+        random.shuffle(toBeExcluded)
+        for i in range(len(self.doors)-2):
+            self.doors[toBeExcluded[i]] = -1
+   #     logging.info('final: %s' % self.doors)
+        #print(('final: %s' % self.doors))
+        return(self.doors)
+    def changeChoice(self):
+        '''
+        player改变选择
+        '''
+        toChange = []
+        for i in range(len(self.doors)):
+            if i != self.choice and self.doors[i] != -1:
+                toChange.append(i)
+        self.choice = random.choice(toChange)
+        #logging.info('choice changed: %d' % self.choice)
+        #print('choice changed: %d' % self.choice)
+        return self.choice
+    def showAnswer(self):
+      #  logging.info(self.doors)
+        #print(self.doors)
+        return self.doors
+    def checkResult(self):
+        gotIt = False
+        if self.doors[self.choice] == 1:
+            gotIt = True
+        return gotIt
+True_list=[]
+False_list=[]
+for j in range(100000):
+    h=MontyHall()
+    A=h.makeChoice()
+    B=h.excludeChoice()
+    C=h.changeChoice()
+    D=h.checkResult()
+    if D==True:
+        True_list.append((A,B,C,D))
+    else:
+        False_list.append((A,B,C,D))
+
+
+print(float(len(False_list))/len(True_list))
+#if h.checkResult()==True:
+ #       True_list.append([h.makeChoice(),h.excludeChoice(),h.changeChoice(),h.checkResult()])
+#else:
+  #      False_list.append([h.makeChoice(),h.excludeChoice(),h.changeChoice(),h.checkResult()])
+#h.checkResult()
+#print(True_list)
+#print(False_list)
